@@ -13,11 +13,6 @@ data "aws_vpc_ipam_pool" "fugropublicpool" {
   }
 }
 
-data "aws_vpc_ipam_preview_next_cidr" "previewcidr" {
-  ipam_pool_id   = data.aws_vpc_ipam_pool.fugropublicpool.id
-  netmask_length = var.netmask
-}
-
 data "aws_region" "current" {
 
 }
@@ -30,7 +25,7 @@ data "aws_availability_zones" "current" {
 }
 
 locals {
-  partition       = cidrsubnets(data.aws_vpc_ipam_preview_next_cidr.previewcidr.cidr, 1, 1)
+  partition       = cidrsubnets(aws_vpc.public_vpc.cidr_block, 1, 1)
   private_subnets = cidrsubnets(local.partition[0], 1, 2, 2)
   public_subnets  = cidrsubnets(local.partition[1], 1, 2, 2)
 }
@@ -44,7 +39,6 @@ resource "aws_vpc" "public_vpc" {
   tags = {
     Name = var.vpcname
   }
-  depends_on = [data.aws_vpc_ipam_preview_next_cidr.previewcidr]
 }
 
 resource "aws_subnet" "public_subnets" {
