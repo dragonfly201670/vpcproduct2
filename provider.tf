@@ -8,8 +8,6 @@ terraform {
 }
 
 provider "aws" {
-  profile = "AWSAdministratorAccess-335184790956"
-  region  = "eu-west-1"
   default_tags {
     tags = {
       environment = "Dev"
